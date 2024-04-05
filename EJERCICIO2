@@ -1,0 +1,70 @@
+.data
+    promptMessage: .asciiz "Ingrese un numero: "
+    resultMessage: .asciiz "El numero menor es: "
+    newline: .asciiz "\n"
+
+.text
+main:
+    # Imprimir mensaje para el primer número
+    li $v0, 4
+    la $a0, promptMessage
+    syscall
+    
+    # Leer el primer número
+    li $v0, 5
+    syscall
+    move $t0, $v0  # Almacenar el primer número en $t0
+
+    # Imprimir mensaje para el segundo número
+    li $v0, 4
+    la $a0, promptMessage
+    syscall
+    
+    # Leer el segundo número
+    li $v0, 5
+    syscall
+    move $t1, $v0  # Almacenar el segundo número en $t1
+
+    # Comparar el primer y segundo número, guardar el menor en $t3
+    blt $t0, $t1, firstIsLesser
+    move $t3, $t1
+    j readThirdNumber
+firstIsLesser:
+    move $t3, $t0
+
+readThirdNumber:
+    # Imprimir mensaje para el tercer número
+    li $v0, 4
+    la $a0, promptMessage
+    syscall
+    
+    # Leer el tercer número
+    li $v0, 5
+    syscall
+    move $t2, $v0  # Almacenar el tercer número en $t2
+
+    # Verificar si el tercer número es menor que el menor actual ($t3)
+    blt $t2, $t3, thirdIsLesser
+    j printResult
+thirdIsLesser:
+    move $t3, $t2
+
+printResult:
+    # Imprimir mensaje de resultado
+    li $v0, 4
+    la $a0, resultMessage
+    syscall
+
+    # Imprimir el número menor
+    li $v0, 1
+    move $a0, $t3
+    syscall
+
+    # Imprimir nueva línea
+    li $v0, 4
+    la $a0, newline
+    syscall
+
+    # Salir del programa
+    li $v0, 10
+    syscall

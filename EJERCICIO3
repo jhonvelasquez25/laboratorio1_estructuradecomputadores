@@ -1,0 +1,87 @@
+.data
+    prompt: .asciiz "Ingrese el número de términos para la serie de Fibonacci: "
+    result: .asciiz "Serie de Fibonacci: "
+    space: .asciiz " "
+
+.text
+main:
+    # Imprime el mensaje de solicitud al usuario
+    li $v0, 4
+    la $a0, prompt
+    syscall
+
+    # Lee el número de términos de la serie de Fibonacci
+    li $v0, 5
+    syscall
+    move $a1, $v0      # Mueve el número de términos a $a1
+
+    # Imprime la cabecera de la serie de Fibonacci
+    li $v0, 4
+    la $a0, result
+    syscall
+
+    # Verifica si el número de términos es válido (mayor que 0)
+    blez $a1, end      # Si es menor o igual a 0, termina el programa
+
+    # Inicializa los dos primeros términos de la serie de Fibonacci
+    li $t0, 0          # Primer término (f0)
+    li $t1, 1          # Segundo término (f1)
+
+    # Imprime el primer término si es necesario
+    li $t2, 1          # Contador de términos impresos
+    blt $t2, $a1, print_t0
+
+loop:
+    # Calcula el próximo término de la serie
+    add $t3, $t0, $t1  # t3 = t0 + t1
+
+    # Actualiza los dos últimos términos
+    move $t0, $t1
+    move $t1, $t3
+
+    # Imprime el término actual de la serie
+    li $v0, 1
+    move $a0, $t3
+    syscall
+
+    # Imprime un espacio
+    li $v0, 4
+    la $a0, space
+    syscall
+
+    # Incrementa el contador de términos impresos
+    addi $t2, $t2, 1
+
+    # Verifica si se han impreso todos los términos solicitados
+    blt $t2, $a1, loop
+
+end:
+    # Termina el programa
+    li $v0, 10
+    syscall
+
+print_t0:
+    # Imprime el primer término (0)
+    li $v0, 1
+    move $a0, $t0
+    syscall
+
+    # Imprime un espacio
+    li $v0, 4
+    la $a0, space
+    syscall
+
+    # Verifica si solo se debe imprimir el primer término
+    li $t2, 2
+    bge $t2, $a1, end
+
+    # Imprime el segundo término (1) si se solicitan al menos dos términos
+    li $v0, 1
+    move $a0, $t1
+    syscall
+
+    # Imprime un espacio
+    li $v0, 4
+    la $a0, space
+    syscall
+    j loop  # Salta al bucle principal si se deben imprimir más términos
